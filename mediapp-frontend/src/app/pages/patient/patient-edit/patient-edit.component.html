@@ -1,0 +1,90 @@
+<form [formRoot]="patientForm.$form" class="example-container" (submit)="operate()">
+
+    <mat-form-field >
+        <mat-label>ID</mat-label>
+        <input matInput placeholder="Id" [formField]="patientForm.$form.idPatient" >
+    </mat-form-field>
+
+    <mat-form-field>
+        <mat-label>FIRST NAME</mat-label>
+        <input matInput placeholder="First name" [formField]="patientForm.$form.firstName">
+        @if (patientForm.$form.firstName().errors().some(error => error.kind === 'required') && patientForm.$form.firstName().touched()) {
+            <small class="invalid">Is required</small>
+        }
+
+        @if (patientForm.$form.firstName().errors().some(error => error.kind === 'maxLength') && patientForm.$form.firstName().touched()) {
+            <small class="invalid">MaxLength is 70</small>
+        }
+    </mat-form-field>
+
+    <mat-form-field>
+        <mat-label>LAST NAME</mat-label>
+        <input matInput placeholder="Last name" [formField]="patientForm.$form.lastName">
+        @if (patientForm.$form.lastName().errors().some(error => error.kind === 'required') && patientForm.$form.lastName().touched()) {
+            <small class="invalid">Is required</small>
+        }
+
+        @if (patientForm.$form.lastName().errors().some(error => error.kind === 'maxLength') && patientForm.$form.lastName().touched()) {
+            <small class="invalid">MaxLength is 70</small>
+        }
+    </mat-form-field>
+
+    <mat-form-field>
+        <mat-label>DNI</mat-label>
+        <input matInput placeholder="DNI" [formField]="patientForm.$form.dni">
+        @if (patientForm.$form.dni().errors().some(error => error.kind === 'required') && patientForm.$form.dni().touched()) {
+            <small class="invalid">Is required</small>
+        }
+
+        @if (patientForm.$form.dni().errors().some(error => error.kind === 'minLength' || error.kind === 'maxLength') && patientForm.$form.dni().touched()) {
+            <small class="invalid">Length must be 8</small>
+        }
+    </mat-form-field>
+
+    <mat-form-field>
+        <mat-label>ADDRESS</mat-label>
+        <input matInput placeholder="Address" [formField]="patientForm.$form.address">
+        @if (patientForm.$form.address().errors().some(error => error.kind === 'maxLength') && patientForm.$form.address().touched()) {
+            <small class="invalid">MaxLength is 150</small>
+        }
+    </mat-form-field>
+
+    <mat-form-field>
+        <mat-label>PHONE</mat-label>
+        <input matInput placeholder="Phone" [formField]="patientForm.$form.phone">
+        @if (patientForm.$form.phone().errors().some(error => error.kind === 'required') && patientForm.$form.phone().touched()) {
+            <small class="invalid">Is required</small>
+        }
+
+        @if (patientForm.$form.phone().errors().some(error => error.kind === 'minLength' || error.kind === 'maxLength') && patientForm.$form.phone().touched()) {
+            <small class="invalid">Length must be 9</small>
+        }
+    </mat-form-field>
+
+    <mat-form-field>
+        <mat-label>EMAIL</mat-label>
+        <input matInput type="email" placeholder="Email" [formField]="patientForm.$form.email">
+        @if (patientForm.$form.email().errors().some(error => error.kind === 'required') && patientForm.$form.email().touched()) {
+            <small class="invalid">Is required</small>
+        }
+
+        @if (patientForm.$form.email().errors().some(error => error.kind === 'email') && patientForm.$form.email().touched()) {
+            <small class="invalid">Invalid email</small>
+        }
+
+        @if (patientForm.$form.email().errors().some(error => error.kind === 'maxLength') && patientForm.$form.email().touched()) {
+            <small class="invalid">MaxLength is 55</small>
+        }
+    </mat-form-field>
+
+    <button mat-flat-button type="submit" [disabled]="patientForm.isInvalid()">
+        <span>OK</span>
+        <mat-icon>done</mat-icon>
+    </button>
+
+    <button mat-flat-button type="button" class="cancel-button" routerLink="/pages/patient">
+        <span>cancel</span>
+        <mat-icon>cancel</mat-icon>
+    </button>
+
+</form>

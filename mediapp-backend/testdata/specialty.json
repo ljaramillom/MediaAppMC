@@ -1,0 +1,14 @@
+[
+  {
+    "name": "Cardiología",
+    "description": "Diagnóstico y tratamiento de enfermedades del corazón y del sistema circulatorio."
+  },
+  {
+    "name": "Pediatría",
+    "description": "Atención médica integral de bebés, niños y adolescentes."
+  },
+  {
+    "name": "Dermatología",
+    "description": "Diagnóstico y tratamiento de enfermedades de la piel, el cabello y las uñas."
+  }
+]

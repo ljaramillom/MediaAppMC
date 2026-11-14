@@ -1,0 +1,14 @@
+[
+  {
+    "nameExam": "Hemograma completo",
+    "descriptionExam": "Analisis de sangre que evalua globulos rojos, blancos y plaquetas del paciente."
+  },
+  {
+    "nameExam": "Electrocardiograma",
+    "descriptionExam": "Registro de la actividad electrica del corazon para detectar arritmias y otras alteraciones."
+  },
+  {
+    "nameExam": "Radiografia de torax",
+    "descriptionExam": "Imagen de rayos X para evaluar pulmones, corazon y estructuras del torax."
+  }
+]

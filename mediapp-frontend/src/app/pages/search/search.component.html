@@ -1,0 +1,86 @@
+<h1 class="title">Search consults</h1>
+
+<mat-tab-group>
+
+    <!-- Pestaña 0: datos del paciente (POST /v1/consults/search/others) -->
+    <mat-tab label="Patient data">
+        <div class="tab-content">
+            <mat-form-field>
+                <mat-label>DNI</mat-label>
+                <input matInput placeholder="DNI" [formField]="searchForm.$form.dni">
+                @if (searchForm.$form.dni().errors().some(error => error.kind === 'maxLength')) {
+                    <small class="invalid">MaxLength is 8</small>
+                }
+            </mat-form-field>
+
+            <mat-form-field>
+                <mat-label>FULL NAME</mat-label>
+                <input matInput placeholder="First or last name" [formField]="searchForm.$form.fullname">
+                @if (searchForm.$form.fullname().errors().some(error => error.kind === 'maxLength')) {
+                    <small class="invalid">MaxLength is 70</small>
+                }
+            </mat-form-field>
+        </div>
+    </mat-tab>
+
+    <!-- Pestaña 1: rango de fechas (GET /v1/consults/search/dates) -->
+    <mat-tab label="Dates">
+        <div class="tab-content">
+            <mat-form-field>
+                <mat-label>DATE RANGE</mat-label>
+                <mat-date-range-input [rangePicker]="rangePicker">
+                    <input matStartDate placeholder="Start date" [formField]="searchForm.$form.startDate">
+                    <input matEndDate placeholder="End date" [formField]="searchForm.$form.endDate">
+                </mat-date-range-input>
+                <mat-hint>MM/DD/YYYY – MM/DD/YYYY</mat-hint>
+                <mat-datepicker-toggle matIconSuffix [for]="rangePicker"></mat-datepicker-toggle>
+                <mat-date-range-picker #rangePicker></mat-date-range-picker>
+            </mat-form-field>
+        </div>
+    </mat-tab>
+
+</mat-tab-group>
+
+<div class="actions">
+    <button mat-flat-button type="button" (click)="search()">
+        <span>Search</span>
+        <mat-icon>search</mat-icon>
+    </button>
+</div>
+
+<div class="mat-shadow-2">
+    <table mat-table [dataSource]="dataSource">
+
+        <ng-container matColumnDef="patient">
+            <th mat-header-cell *matHeaderCellDef> PATIENT </th>
+            <td mat-cell *matCellDef="let row"> {{row.patient?.firstName}} {{row.patient?.lastName}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="medic">
+            <th mat-header-cell *matHeaderCellDef> MEDIC </th>
+            <td mat-cell *matCellDef="let row"> {{row.medic?.primaryName}} {{row.medic?.surname}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="date">
+            <th mat-header-cell *matHeaderCellDef> DATE </th>
+            <td mat-cell *matCellDef="let row"> {{row.consultDate | date:'dd/MM/yyyy HH:mm a'}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef> ACTIONS </th>
+            <td mat-cell *matCellDef="let row">
+                <button mat-flat-button type="button" (click)="viewDetails(row)">
+                    <span>View Details</span>
+                    <mat-icon>visibility</mat-icon>
+                </button>
+            </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+        <tr class="mat-row" *matNoDataRow>
+            <td class="mat-cell" colspan="4">No results</td>
+        </tr>
+    </table>
+</div>

@@ -1,0 +1,42 @@
+<form [formRoot]="specialtyForm.$form" class="example-container" (submit)="operate()">
+
+    <mat-form-field >
+        <mat-label>ID</mat-label>
+        <input matInput placeholder="Id" [formField]="specialtyForm.$form.idSpecialty" >
+    </mat-form-field>
+
+    <mat-form-field>
+        <mat-label>NAME</mat-label>
+        <input matInput placeholder="Name" [formField]="specialtyForm.$form.nameSpecialty">
+        @if (specialtyForm.$form.nameSpecialty().errors().some(error => error.kind === 'required') && specialtyForm.$form.nameSpecialty().touched()) {
+            <small class="invalid">Is required</small>
+        }
+
+        @if (specialtyForm.$form.nameSpecialty().errors().some(error => error.kind === 'maxLength') && specialtyForm.$form.nameSpecialty().touched()) {
+            <small class="invalid">MaxLength is 50</small>
+        }
+    </mat-form-field>
+
+    <mat-form-field>
+        <mat-label>DESCRIPTION</mat-label>
+        <input matInput placeholder="Description" [formField]="specialtyForm.$form.descriptionSpecialty">
+        @if (specialtyForm.$form.descriptionSpecialty().errors().some(error => error.kind === 'required') && specialtyForm.$form.descriptionSpecialty().touched()) {
+            <small class="invalid">Is required</small>
+        }
+
+        @if (specialtyForm.$form.descriptionSpecialty().errors().some(error => error.kind === 'maxLength') && specialtyForm.$form.descriptionSpecialty().touched()) {
+            <small class="invalid">MaxLength is 150</small>
+        }
+    </mat-form-field>
+
+    <button mat-flat-button type="submit" [disabled]="specialtyForm.isInvalid()">
+        <span>OK</span>
+        <mat-icon>done</mat-icon>
+    </button>
+
+    <button mat-flat-button type="button" class="cancel-button" routerLink="/pages/specialty">
+        <span>cancel</span>
+        <mat-icon>cancel</mat-icon>
+    </button>
+
+</form>

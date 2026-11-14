@@ -1,0 +1,90 @@
+[
+  {
+    "consult": {
+      "patient": {
+        "idPatient": 1
+      },
+      "medic": {
+        "idMedic": 1
+      },
+      "user": {
+        "idUser": 1
+      },
+      "numConsult": "T01",
+      "consultDate": "2026-03-10T09:30:00",
+      "details": [
+        {
+          "diagnosis": "Hipertension arterial leve",
+          "treatment": "Control de presion arterial diario, dieta baja en sodio y revision en 30 dias."
+        }
+      ]
+    },
+    "lstExam": [
+      {
+        "idExam": 1
+      },
+      {
+        "idExam": 2
+      }
+    ]
+  },
+  {
+    "consult": {
+      "patient": {
+        "idPatient": 2
+      },
+      "medic": {
+        "idMedic": 1
+      },
+      "user": {
+        "idUser": 1
+      },
+      "numConsult": "T02",
+      "consultDate": "2026-03-11T11:00:00",
+      "details": [
+        {
+          "diagnosis": "Bronquitis aguda",
+          "treatment": "Reposo, hidratacion abundante y jarabe expectorante cada 8 horas por 7 dias."
+        },
+        {
+          "diagnosis": "Deficit de vitamina D",
+          "treatment": "Suplemento de vitamina D3 una vez al dia y exposicion solar moderada."
+        }
+      ]
+    },
+    "lstExam": [
+      {
+        "idExam": 2
+      }
+    ]
+  },
+  {
+    "consult": {
+      "patient": {
+        "idPatient": 1
+      },
+      "medic": {
+        "idMedic": 1
+      },
+      "user": {
+        "idUser": 1
+      },
+      "numConsult": "T03",
+      "consultDate": "2026-03-12T15:45:00",
+      "details": [
+        {
+          "diagnosis": "Dermatitis atopica",
+          "treatment": "Crema emoliente dos veces al dia y evitar jabones irritantes."
+        }
+      ]
+    },
+    "lstExam": [
+      {
+        "idExam": 1
+      },
+      {
+        "idExam": 2
+      }
+    ]
+  }
+]

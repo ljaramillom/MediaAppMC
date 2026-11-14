@@ -1,0 +1,188 @@
+<mat-stepper linear #stepper class="wizard">
+
+    <!-- PASO 1: paciente, fecha, detalles, examenes y medico -->
+    <mat-step [completed]="$step1Completed()">
+        <ng-template matStepLabel>Principal</ng-template>
+
+        <div class="step-container">
+            <mat-form-field>
+                <mat-label>PATIENT</mat-label>
+                <mat-select [formField]="wizardForm.$form.idPatient">
+                    @for (patient of $patients(); track patient.idPatient) {
+                        <mat-option [value]="patient.idPatient">{{ patient.firstName }} {{ patient.lastName }}</mat-option>
+                    }
+                </mat-select>
+                @if (wizardForm.$form.idPatient().errors().some(error => error.kind === 'required') && wizardForm.$form.idPatient().touched()) {
+                    <small class="invalid">Is required</small>
+                }
+            </mat-form-field>
+
+            <mat-form-field>
+                <mat-label>CONSULT DATE</mat-label>
+                <input matInput [matDatepicker]="picker" [min]="minDate" [formField]="wizardForm.$form.consultDate">
+                <mat-hint>MM/DD/YYYY</mat-hint>
+                <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-datepicker #picker></mat-datepicker>
+                @if (wizardForm.$form.consultDate().errors().some(error => error.kind === 'required') && wizardForm.$form.consultDate().touched()) {
+                    <small class="invalid">Is required</small>
+                }
+            </mat-form-field>
+
+            <!-- Detalles: diagnostico + tratamiento -->
+            <div class="row">
+                <mat-form-field>
+                    <mat-label>DIAGNOSIS</mat-label>
+                    <input matInput placeholder="Diagnosis" [formField]="wizardForm.$form.diagnosis">
+                    <mat-hint align="end">{{ wizardForm.$model().diagnosis.length }} / {{ maxDiagnosisLength }}</mat-hint>
+                    @if (wizardForm.$form.diagnosis().errors().some(error => error.kind === 'maxLength')) {
+                        <small class="invalid">MaxLength is {{ maxDiagnosisLength }}</small>
+                    }
+                </mat-form-field>
+
+                <mat-form-field>
+                    <mat-label>TREATMENT</mat-label>
+                    <textarea matInput placeholder="Treatment" [formField]="wizardForm.$form.treatment"></textarea>
+                    <mat-hint align="end">{{ wizardForm.$model().treatment.length }} / {{ maxTreatmentLength }}</mat-hint>
+                    @if (wizardForm.$form.treatment().errors().some(error => error.kind === 'maxLength')) {
+                        <small class="invalid">MaxLength is {{ maxTreatmentLength }}</small>
+                    }
+                </mat-form-field>
+
+                <button mat-flat-button type="button" (click)="addDetail()" [disabled]="!wizardForm.isDetailValid()">
+                    <span>Add Detail</span>
+                    <mat-icon>add</mat-icon>
+                </button>
+            </div>
+
+            <mat-accordion>
+                @for (detail of $details(); track $index) {
+                    <mat-expansion-panel>
+                        <mat-expansion-panel-header>
+                            <mat-panel-title>{{ $index + 1 }}. {{ detail.diagnosis }}</mat-panel-title>
+                        </mat-expansion-panel-header>
+                        <p>{{ detail.treatment }}</p>
+                        <button mat-flat-button type="button" class="cancel-button" (click)="removeDetail($index)">
+                            <span>Remove</span>
+                            <mat-icon>delete</mat-icon>
+                        </button>
+                    </mat-expansion-panel>
+                } @empty {
+                    <p class="empty">No details yet (at least one is required)</p>
+                }
+            </mat-accordion>
+
+            <!-- Examenes: autocomplete + lista -->
+            <div class="row">
+                <mat-form-field>
+                    <mat-label>EXAM</mat-label>
+                    <input #examInput matInput placeholder="Search exam" [matAutocomplete]="auto" (input)="onExamInput($event)">
+                    <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayExam" (optionSelected)="onExamSelected($event)">
+                        @for (exam of $filteredExams(); track exam.idExam) {
+                            <mat-option [value]="exam">{{ exam.nameExam }}</mat-option>
+                        }
+                    </mat-autocomplete>
+                </mat-form-field>
+
+                <button mat-flat-button type="button" (click)="addExam()" [disabled]="!$examCandidate()">
+                    <span>Add Exam</span>
+                    <mat-icon>add</mat-icon>
+                </button>
+            </div>
+
+            <mat-list>
+                @for (exam of $selectedExams(); track exam.idExam) {
+                    <mat-list-item>
+                        <span matListItemTitle>{{ exam.nameExam }}</span>
+                        <button matListItemMeta mat-icon-button type="button" (click)="removeExam(exam.idExam)" [attr.aria-label]="'Remove exam ' + exam.nameExam">
+                            <mat-icon>delete</mat-icon>
+                        </button>
+                    </mat-list-item>
+                }
+            </mat-list>
+
+            <!-- Medicos: click en la tarjeta para seleccionar -->
+            <h3>MEDIC</h3>
+            <div class="medic-grid" role="radiogroup" aria-label="Medic">
+                @for (medic of $medics(); track medic.idMedic) {
+                    <mat-card appearance="outlined" class="medic-card" [ngClass]="{ 'medic-card-selected': $selectedMedic()?.idMedic === medic.idMedic }"
+                        role="radio" tabindex="0" [attr.aria-checked]="$selectedMedic()?.idMedic === medic.idMedic"
+                        (click)="selectMedic(medic)" (keydown.enter)="selectMedic(medic)" (keydown.space)="selectMedic(medic); $event.preventDefault()">
+                        <mat-card-header>
+                            <mat-card-title>{{ medic.primaryName }} {{ medic.surname }}</mat-card-title>
+                            <mat-card-subtitle>{{ medic.cmpMedic }}</mat-card-subtitle>
+                        </mat-card-header>
+                        @if (medic.photo) {
+                            <img class="medic-photo" [src]="medic.photo" width="96" height="96" [alt]="'Photo of ' + medic.primaryName + ' ' + medic.surname">
+                        } @else {
+                            <mat-icon class="medic-photo-placeholder" aria-hidden="true">account_circle</mat-icon>
+                        }
+                    </mat-card>
+                }
+            </div>
+
+            <div class="actions">
+                <button mat-flat-button type="button" matStepperNext [disabled]="!$step1Completed()">
+                    <span>Next</span>
+                    <mat-icon>navigate_next</mat-icon>
+                </button>
+            </div>
+        </div>
+    </mat-step>
+
+    <!-- PASO 2: numero de consulta -->
+    <mat-step [completed]="$consultNumber() !== null">
+        <ng-template matStepLabel>N° Consult</ng-template>
+
+        <mat-grid-list cols="11" rowHeight="48px" gutterSize="4px">
+            @for (n of consultNumbers; track n) {
+                <mat-grid-tile>
+                    <button type="button" class="number-tile" [ngClass]="{ 'number-tile-selected': $consultNumber() === n }"
+                        [attr.aria-pressed]="$consultNumber() === n" (click)="selectConsultNumber(n)">C{{ n }}</button>
+                </mat-grid-tile>
+            }
+        </mat-grid-list>
+
+        <div class="actions">
+            <button mat-flat-button type="button" matStepperPrevious>
+                <mat-icon>navigate_before</mat-icon>
+                <span>Back</span>
+            </button>
+            <button mat-flat-button type="button" (click)="nextManualStep()">
+                <span>Next</span>
+                <mat-icon>navigate_next</mat-icon>
+            </button>
+        </div>
+    </mat-step>
+
+    <!-- PASO 3: revision y guardado -->
+    <mat-step>
+        <ng-template matStepLabel>Review</ng-template>
+
+        <dl class="review">
+            <dt>Patient</dt>
+            <dd>{{ $selectedPatient()?.firstName }} {{ $selectedPatient()?.lastName }}</dd>
+            <dt>Medic</dt>
+            <dd>{{ $selectedMedic()?.primaryName }} {{ $selectedMedic()?.surname }}</dd>
+            <dt>N° Consult</dt>
+            <dd>{{ $numConsultLabel() }}</dd>
+            <dt>Date</dt>
+            <dd>{{ wizardForm.$model().consultDate | date: 'dd/MM/yyyy' }}</dd>
+            <dt>Details</dt>
+            <dd>{{ $details().length }}</dd>
+            <dt>Exams</dt>
+            <dd>{{ $selectedExams().length }}</dd>
+        </dl>
+
+        <div class="actions">
+            <button mat-flat-button type="button" matStepperPrevious>
+                <mat-icon>navigate_before</mat-icon>
+                <span>Back</span>
+            </button>
+            <button mat-flat-button type="button" (click)="save()" [disabled]="!$canSave()">
+                <span>Save</span>
+                <mat-icon>done</mat-icon>
+            </button>
+        </div>
+    </mat-step>
+
+</mat-stepper>

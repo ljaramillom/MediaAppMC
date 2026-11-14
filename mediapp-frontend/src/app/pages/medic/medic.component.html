@@ -1,0 +1,70 @@
+<mat-form-field>
+  <mat-label>Filter</mat-label>
+  <input matInput (keyup)="applyFilter($event)" placeholder="Ex. Juan" #input>
+</mat-form-field>
+
+<div class="mat-shadow-2">
+  <table mat-table [dataSource]="dataSource" matSort>
+
+    <ng-container matColumnDef="idMedic">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> ID </th>
+      <td mat-cell *matCellDef="let row"> {{row.idMedic}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="photo">
+      <th mat-header-cell *matHeaderCellDef> PHOTO </th>
+      <td mat-cell *matCellDef="let row">
+        @if (row.photo) {
+          <img class="avatar" [src]="row.photo" width="40" height="40" [alt]="'Photo of ' + row.primaryName + ' ' + row.surname">
+        } @else {
+          <mat-icon class="avatar-placeholder" aria-hidden="true">account_circle</mat-icon>
+        }
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="primaryName">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> FIRST NAME </th>
+      <td mat-cell *matCellDef="let row"> {{row.primaryName}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="surname">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> LAST NAME </th>
+      <td mat-cell *matCellDef="let row"> {{row.surname}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="cmpMedic">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> CMP </th>
+      <td mat-cell *matCellDef="let row"> {{row.cmpMedic}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef> ACTIONS </th>
+      <td mat-cell *matCellDef="let row">
+        <button mat-flat-button (click)="openDialog(row.idMedic)">
+            <span>Edit</span>
+            <mat-icon>edit</mat-icon>
+        </button>
+
+        <button mat-flat-button class="cancel-button" (click)="delete(row.idMedic)" >
+           <span>Delete</span>
+           <mat-icon>delete</mat-icon>
+        </button>
+      </td>
+    </ng-container>
+
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+    <!-- Fila que se muestra cuando ningun dato coincide con el filtro -->
+    <tr class="mat-row" *matNoDataRow>
+      <td class="mat-cell" colspan="6">No data matching the filter "{{input.value}}"</td>
+    </tr>
+  </table>
+
+  <mat-paginator [pageSizeOptions]="[3, 10, 25, 100]" aria-label="Select page of medics"></mat-paginator>
+
+  <button mat-fab style="float: right;" (click)="openDialog()" aria-label="New medic">
+    <mat-icon>add</mat-icon>
+  </button>
+</div>

@@ -1,0 +1,214 @@
+/* Wizard de diseño (Claude Design). Material se re-estiliza solo con tokens CSS en el host */
+:host {
+    --wd-teal: #0D9488;
+    --wd-font: 'Inter', system-ui, sans-serif;
+    display: block;
+    min-height: 100%;
+    background: #F3F6F8;
+    color: #0F172A;
+    font-family: var(--wd-font);
+
+    /* Color primario y tipografia del sistema, solo dentro de esta pantalla */
+    --mat-sys-primary: var(--wd-teal);
+    --mat-sys-on-primary: #FFFFFF;
+    --mat-sys-body-large-font: var(--wd-font);
+    --mat-sys-body-medium-font: var(--wd-font);
+    --mat-sys-body-small-font: var(--wd-font);
+    --mat-sys-label-large-font: var(--wd-font);
+    --mat-sys-title-small-font: var(--wd-font);
+
+    /* Stepper: el circulo lo dibuja el template de matStepperIcon */
+    --mat-stepper-container-color: transparent;
+    --mat-stepper-header-height: 76px;
+    --mat-stepper-line-color: #E2E8F0;
+    --mat-stepper-header-icon-background-color: transparent;
+    --mat-stepper-header-selected-state-icon-background-color: transparent;
+    --mat-stepper-header-edit-state-icon-background-color: transparent;
+    --mat-stepper-header-done-state-icon-background-color: transparent;
+    --mat-stepper-header-hover-state-layer-color: rgba(13, 148, 136, 0.06);
+    --mat-stepper-header-hover-state-layer-shape: 16px;
+    --mat-stepper-header-focus-state-layer-color: rgba(13, 148, 136, 0.1);
+    --mat-stepper-header-focus-state-layer-shape: 16px;
+
+    /* Campos: outline 1px #CBD5E1, radio 10px, alto 44px */
+    --mat-form-field-outlined-container-shape: 10px;
+    --mat-form-field-outlined-outline-color: #CBD5E1;
+    --mat-form-field-outlined-hover-outline-color: #94A3B8;
+    --mat-form-field-container-height: 44px;
+    --mat-form-field-container-vertical-padding: 10px;
+    --mat-form-field-container-text-size: 14px;
+    --mat-form-field-outlined-input-text-placeholder-color: #94A3B8;
+
+    --mat-checkbox-label-text-color: #1E293B;
+    --mat-checkbox-label-text-size: 14px;
+
+    /* Botones */
+    --mat-button-filled-container-color: var(--wd-teal);
+    --mat-button-filled-container-shape: 10px;
+    --mat-button-filled-container-height: 46px;
+    --mat-button-filled-horizontal-padding: 28px;
+    --mat-button-filled-label-text-weight: 700;
+    --mat-button-filled-disabled-container-color: #CBD5E1;
+    --mat-button-filled-disabled-label-text-color: #FFFFFF;
+    --mat-button-outlined-container-shape: 10px;
+    --mat-button-outlined-container-height: 46px;
+    --mat-button-outlined-horizontal-padding: 24px;
+    --mat-button-outlined-outline-color: #CBD5E1;
+    --mat-button-outlined-label-text-color: #334155;
+    --mat-button-outlined-label-text-weight: 700;
+
+    /* Chips de examenes (pildoras teal) */
+    --mat-chip-elevated-container-color: #F0FDFA;
+    --mat-chip-outline-color: #CCFBF1;
+    --mat-chip-outline-width: 1px;
+    --mat-chip-label-text-color: #0F766E;
+    --mat-chip-label-text-size: 12.5px;
+    --mat-chip-label-text-weight: 600;
+    --mat-chip-container-shape-radius: 999px;
+    --mat-chip-container-height: 28px;
+}
+
+.page {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 48px 24px 96px;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+}
+
+h1 { margin: 0 0 6px; font-size: 28px; font-weight: 800; letter-spacing: -0.02em; }
+h2 { margin: 0 0 4px; font-size: 18px; font-weight: 700; }
+.page-header p { margin: 0; font-size: 15px; color: #64748B; }
+.card-head p { margin: 0; font-size: 13.5px; color: #64748B; }
+.muted { font-size: 13px; color: #64748B; }
+
+/* Barra blanca detras de las cabeceras del stepper (sin tocar clases internas) */
+.stepper-wrap { position: relative; }
+.stepper-wrap.horizontal::before {
+    content: '';
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: var(--mat-stepper-header-height);
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 16px;
+    box-sizing: border-box;
+}
+mat-stepper { position: relative; }
+
+.step-circle {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    font-size: 15px;
+    font-weight: 700;
+    background: #FFFFFF;
+    color: #94A3B8;
+    border: 2px solid #E2E8F0;
+}
+.step-circle.active { background: var(--wd-teal); color: #FFFFFF; border-color: var(--wd-teal); }
+.step-circle.done { background: #CCFBF1; color: var(--wd-teal); border-color: #CCFBF1; }
+.step-circle mat-icon { font-size: 20px; width: 20px; height: 20px; }
+
+.step-label { display: flex; flex-direction: column; margin-left: 10px; text-align: left; }
+.step-kicker { font-size: 11px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: #94A3B8; }
+.step-label.current .step-kicker { color: var(--wd-teal); }
+.step-label.past .step-kicker { color: #0F172A; }
+.step-title { font-size: 14px; font-weight: 600; color: #0F172A; }
+
+.card {
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 20px;
+    padding: 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+/* El contenido horizontal trae padding lateral de 24px: la tarjeta lo recupera */
+.horizontal .card { margin: 28px -24px 0; }
+
+.grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+
+.field { display: flex; flex-direction: column; gap: 6px; }
+.field mat-form-field { width: 100%; }
+.date-field { max-width: 280px; }
+.field-label { font-size: 13px; font-weight: 600; color: #334155; }
+
+.exams { border: 0; margin: 0; padding: 0; min-width: 0; }
+.exams legend { padding: 0; margin-bottom: 10px; }
+.exam-grid { gap: 4px 20px; }
+
+.room {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 18px;
+    text-align: left;
+    font: inherit;
+    color: inherit;
+    cursor: pointer;
+    background: #FFFFFF;
+    border: 2px solid #E2E8F0;
+    border-radius: 14px;
+}
+.room:hover { border-color: #99F6E4; }
+.room:focus-visible { outline: 3px solid #0F766E; outline-offset: 2px; }
+.room.selected { border-color: var(--wd-teal); background: #F0FDFA; }
+.room-top { display: flex; align-items: center; justify-content: space-between; }
+.room-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #F1F5F9;
+    color: #64748B;
+}
+.room.selected .room-icon { background: var(--wd-teal); color: #FFFFFF; }
+.room-check { color: var(--wd-teal); }
+.room-name { font-size: 15px; font-weight: 700; }
+.room-area { font-size: 12.5px; color: #64748B; margin-top: -8px; }
+.room-equipment { font-size: 12px; color: #64748B; border-top: 1px solid #EEF2F6; padding-top: 10px; }
+
+.summary { margin: 0; gap: 20px 32px; }
+.summary .full { grid-column: 1 / -1; }
+.summary dt { font-size: 11.5px; font-weight: 700; letter-spacing: 0.03em; text-transform: uppercase; color: #64748B; margin-bottom: 4px; }
+.summary dd { margin: 0; font-size: 14.5px; color: #1E293B; line-height: 1.5; }
+.summary dd.strong { font-size: 15px; font-weight: 600; color: #0F172A; }
+
+.actions { display: flex; justify-content: space-between; gap: 12px; margin-top: 28px; }
+.actions.end { justify-content: flex-end; }
+.btn-primary:not([disabled]):hover { --mat-button-filled-container-color: #0F766E; }
+
+.success { align-items: center; text-align: center; gap: 16px; padding: 48px; }
+.success h2 { font-size: 22px; font-weight: 800; margin: 0; }
+.success p { margin: 0; font-size: 15px; color: #64748B; max-width: 440px; }
+.success strong { color: #0F172A; }
+.success-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: #CCFBF1;
+    color: var(--wd-teal);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.success .btn-primary { margin-top: 12px; }
+
+/* Telefono: grillas a una columna; el stepper ya cambio a vertical */
+@media (max-width: 720px) {
+    .page { padding: 24px 16px 64px; }
+    .grid-2, .grid-3 { grid-template-columns: minmax(0, 1fr); }
+    .card { padding: 20px; }
+    .success { padding: 32px 20px; }
+    .date-field { max-width: none; }
+}

@@ -1,0 +1,26 @@
+[
+  {
+    "firstName": "Carlos",
+    "lastName": "Ramirez Quispe",
+    "dni": "10000001",
+    "address": "Av. Los Olivos 123, Lima",
+    "phone": "900000001",
+    "email": "carlos.ramirez@example.com"
+  },
+  {
+    "firstName": "Maria",
+    "lastName": "Torres Mendoza",
+    "dni": "10000002",
+    "address": "Jr. Las Flores 456, Arequipa",
+    "phone": "900000002",
+    "email": "maria.torres@example.com"
+  },
+  {
+    "firstName": "Luis",
+    "lastName": "Garcia Paredes",
+    "dni": "10000003",
+    "address": "Calle San Martin 789, Cusco",
+    "phone": "900000003",
+    "email": "luis.garcia@example.com"
+  }
+]

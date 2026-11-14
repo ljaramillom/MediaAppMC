@@ -1,0 +1,29 @@
+spring:
+  application:
+    name: mediapp-backend
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: ${DB_URL:jdbc:postgresql://aws-0-us-east-1.pooler.supabase.com:5432/postgres}
+    username: ${DB_USERNAME:postgres.oihoutmdpfgrgwqtwhwt}
+    password: ${DB_PASSWORD:st1nFEuYoEdXwLMC}
+  jpa:
+    database: postgresql
+    show-sql: false
+    hibernate:
+      ddl-auto: update
+  # Subida de la foto del medico (multipart/form-data)
+  servlet:
+    multipart:
+      max-file-size: 2MB
+      max-request-size: 3MB
+
+# Supabase Storage: bucket publico donde se guardan las fotos de los medicos.
+# La service role key NO se versiona: definir SUPABASE_SERVICE_ROLE_KEY como variable de entorno.
+supabase:
+  url: ${SUPABASE_URL:https://oihoutmdpfgrgwqtwhwt.supabase.co}
+  key: ${SUPABASE_SERVICE_ROLE_KEY:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9paG91dG1kcGZncmd3cXR3aHd0Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc5MTk0MDkzNiwiZXhwIjoyMTA3NTE2OTM2fQ.KPSR-N6iR_c2_ry6iE3LYE4MRZUDdvBOhYiRG3X8Evk}
+  bucket: ${SUPABASE_BUCKET:photos}
+
+medic:
+  photo:
+    max-size: 2MB

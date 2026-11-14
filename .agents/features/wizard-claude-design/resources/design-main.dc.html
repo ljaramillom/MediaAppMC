@@ -1,0 +1,426 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Alta de atención médica</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap">
+<style>
+  body { margin: 0; font-family: 'Inter', system-ui, sans-serif; background: #F3F6F8; }
+  * { box-sizing: border-box; }
+  button { font-family: inherit; cursor: pointer; }
+  select, textarea, input { font-family: inherit; }
+  a { color: #0D9488; } a:hover { color: #0F766E; }
+  ::placeholder { color: #94A3B8; }
+</style>
+</helmet>
+
+<div style="width: 100%; min-height: 920px; display: flex; justify-content: center; padding: 48px 24px 96px;">
+<div style="width: 100%; max-width: 860px; display: flex; flex-direction: column; gap: 28px;">
+
+  <!-- Header -->
+  <div>
+    <h1 style="margin: 0 0 6px; font-size: 28px; font-weight: 800; color: #0F172A; letter-spacing: -0.02em;">Nueva atención médica</h1>
+    <p style="margin: 0; font-size: 15px; color: #64748B;">Registra los datos clínicos, elige el consultorio y confirma el alta.</p>
+  </div>
+
+  <!-- Stepper -->
+  <div style="display: flex; align-items: center; background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 16px; padding: 20px 28px;">
+    <button onClick="{{ goStep1 }}" style="display: flex; align-items: center; gap: 12px; background: none; border: none; padding: 0;">
+      <span style="width: 36px; height: 36px; min-width: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 700; background: {{ step1.circleBg }}; color: {{ step1.circleColor }}; border: 2px solid {{ step1.circleBorder }};">{{ step1.mark }}</span>
+      <span style="display: flex; flex-direction: column; align-items: flex-start;">
+        <span style="font-size: 11px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: {{ step1.labelColor }};">Paso 1</span>
+        <span style="font-size: 14px; font-weight: 600; color: #0F172A;">Datos de la atención</span>
+      </span>
+    </button>
+
+    <div style="flex: 1 1 auto; height: 2px; background: {{ line1Color }}; margin: 0 20px;"></div>
+
+    <button onClick="{{ goStep2 }}" style="display: flex; align-items: center; gap: 12px; background: none; border: none; padding: 0;">
+      <span style="width: 36px; height: 36px; min-width: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 700; background: {{ step2.circleBg }}; color: {{ step2.circleColor }}; border: 2px solid {{ step2.circleBorder }};">{{ step2.mark }}</span>
+      <span style="display: flex; flex-direction: column; align-items: flex-start;">
+        <span style="font-size: 11px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: {{ step2.labelColor }};">Paso 2</span>
+        <span style="font-size: 14px; font-weight: 600; color: #0F172A;">Consultorio</span>
+      </span>
+    </button>
+
+    <div style="flex: 1 1 auto; height: 2px; background: {{ line2Color }}; margin: 0 20px;"></div>
+
+    <button onClick="{{ goStep3 }}" style="display: flex; align-items: center; gap: 12px; background: none; border: none; padding: 0;">
+      <span style="width: 36px; height: 36px; min-width: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 700; background: {{ step3.circleBg }}; color: {{ step3.circleColor }}; border: 2px solid {{ step3.circleBorder }};">{{ step3.mark }}</span>
+      <span style="display: flex; flex-direction: column; align-items: flex-start;">
+        <span style="font-size: 11px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: {{ step3.labelColor }};">Paso 3</span>
+        <span style="font-size: 14px; font-weight: 600; color: #0F172A;">Resumen y confirmación</span>
+      </span>
+    </button>
+  </div>
+
+  <!-- Success panel -->
+  <sc-if value="{{ confirmed }}" hint-placeholder-val="{{ false }}">
+    <div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 20px; padding: 48px; display: flex; flex-direction: column; align-items: center; gap: 16px; text-align: center;">
+      <span style="width: 64px; height: 64px; border-radius: 50%; background: #CCFBF1; display: flex; align-items: center; justify-content: center;">
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 13l4 4L19 7" stroke="#0D9488" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </span>
+      <h2 style="margin: 0; font-size: 22px; font-weight: 800; color: #0F172A;">Atención registrada</h2>
+      <p style="margin: 0; font-size: 15px; color: #64748B; max-width: 440px;">La atención de <strong style="color:#0F172A;">{{ pacienteNombre }}</strong> con <strong style="color:#0F172A;">{{ medicoNombre }}</strong> quedó agendada en <strong style="color:#0F172A;">{{ consultorioNombre }}</strong> el {{ fechaDisplay }}.</p>
+      <button onClick="{{ resetWizard }}" style="margin-top: 12px; background: #0D9488; color: #FFFFFF; border: none; border-radius: 10px; padding: 12px 24px; font-size: 14px; font-weight: 700;">Registrar otra atención</button>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ notConfirmed }}" hint-placeholder-val="{{ true }}">
+  <div style="display: flex; flex-direction: column; gap: 28px;">
+
+  <!-- PASO 1 -->
+  <sc-if value="{{ isStep1 }}" hint-placeholder-val="{{ true }}">
+    <div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 20px; padding: 32px; display: flex; flex-direction: column; gap: 24px;">
+      <div>
+        <h2 style="margin: 0 0 4px; font-size: 18px; font-weight: 700; color: #0F172A;">Datos de la atención</h2>
+        <p style="margin: 0; font-size: 13.5px; color: #64748B;">Médico, paciente, diagnóstico y exámenes solicitados.</p>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px;">
+        <div style="display: flex; flex-direction: column; gap: 6px;">
+          <label for="medico-select" style="font-size: 13px; font-weight: 600; color: #334155;">Médico</label>
+          <select id="medico-select" value="{{ medicoId }}" onChange="{{ onMedicoChange }}" style="height: 44px; border-radius: 10px; border: 1px solid #CBD5E1; padding: 0 12px; font-size: 14px; color: #0F172A; background: #FFFFFF;">
+            <option value="">Seleccionar médico…</option>
+            <sc-for list="{{ medicos }}" as="m" hint-placeholder-count="4">
+              <option value="{{ m.id }}">{{ m.label }}</option>
+            </sc-for>
+          </select>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 6px;">
+          <label for="paciente-select" style="font-size: 13px; font-weight: 600; color: #334155;">Paciente</label>
+          <select id="paciente-select" value="{{ pacienteId }}" onChange="{{ onPacienteChange }}" style="height: 44px; border-radius: 10px; border: 1px solid #CBD5E1; padding: 0 12px; font-size: 14px; color: #0F172A; background: #FFFFFF;">
+            <option value="">Seleccionar paciente…</option>
+            <sc-for list="{{ pacientes }}" as="p" hint-placeholder-count="4">
+              <option value="{{ p.id }}">{{ p.label }}</option>
+            </sc-for>
+          </select>
+        </div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 6px; max-width: 280px;">
+        <label for="fecha-input" style="font-size: 13px; font-weight: 600; color: #334155;">Fecha de atención</label>
+        <input id="fecha-input" type="date" value="{{ fecha }}" onChange="{{ onFechaChange }}" style="height: 44px; border-radius: 10px; border: 1px solid #CBD5E1; padding: 0 12px; font-size: 14px; color: #0F172A;">
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px;">
+        <div style="display: flex; flex-direction: column; gap: 6px;">
+          <label for="diagnostico-input" style="font-size: 13px; font-weight: 600; color: #334155;">Diagnóstico</label>
+          <textarea id="diagnostico-input" value="{{ diagnostico }}" onChange="{{ onDiagnosticoChange }}" placeholder="Ej. Hipertensión arterial leve" rows="4" style="resize: vertical; border-radius: 10px; border: 1px solid #CBD5E1; padding: 10px 12px; font-size: 14px; color: #0F172A; line-height: 1.5;"></textarea>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 6px;">
+          <label for="tratamiento-input" style="font-size: 13px; font-weight: 600; color: #334155;">Tratamiento</label>
+          <textarea id="tratamiento-input" value="{{ tratamiento }}" onChange="{{ onTratamientoChange }}" placeholder="Ej. Losartán 50mg cada 24h por 30 días" rows="4" style="resize: vertical; border-radius: 10px; border: 1px solid #CBD5E1; padding: 10px 12px; font-size: 14px; color: #0F172A; line-height: 1.5;"></textarea>
+        </div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 10px;">
+        <span style="font-size: 13px; font-weight: 600; color: #334155;">Exámenes solicitados</span>
+        <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 20px;">
+          <sc-for list="{{ examenes }}" as="ex" hint-placeholder-count="8">
+            <label for="{{ ex.inputId }}" style="display: flex; align-items: center; gap: 10px; font-size: 14px; color: #1E293B; cursor: pointer;">
+              <input id="{{ ex.inputId }}" type="checkbox" checked="{{ ex.checked }}" onChange="{{ ex.toggle }}" style="width: 18px; height: 18px; accent-color: #0D9488;">
+              {{ ex.nombre }}
+            </label>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+
+    <div style="display: flex; justify-content: flex-end; gap: 12px;">
+      <button disabled="{{ step1Disabled }}" onClick="{{ goNext }}" style="background: {{ step1ButtonBg }}; color: #FFFFFF; border: none; border-radius: 10px; padding: 13px 28px; font-size: 14px; font-weight: 700;">Siguiente: Consultorio</button>
+    </div>
+  </sc-if>
+
+  <!-- PASO 2 -->
+  <sc-if value="{{ isStep2 }}" hint-placeholder-val="{{ false }}">
+    <div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 20px; padding: 32px; display: flex; flex-direction: column; gap: 20px;">
+      <div>
+        <h2 style="margin: 0 0 4px; font-size: 18px; font-weight: 700; color: #0F172A;">Selecciona el consultorio</h2>
+        <p style="margin: 0; font-size: 13.5px; color: #64748B;">Elige visualmente dónde se realizará la atención.</p>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px;">
+        <sc-for list="{{ consultorios }}" as="c" hint-placeholder-count="6">
+          <button onClick="{{ c.select }}" style="text-align: left; display: flex; flex-direction: column; gap: 10px; padding: 18px; border-radius: 14px; border: 2px solid {{ c.borderColor }}; background: {{ c.bgColor }};">
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+              <span style="width: 38px; height: 38px; border-radius: 10px; background: {{ c.iconBg }}; display: flex; align-items: center; justify-content: center;">
+                <svg width="19" height="19" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6" stroke="{{ c.iconColor }}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </span>
+              <sc-if value="{{ c.selected }}" hint-placeholder-val="{{ false }}">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#0D9488"/><path d="M8 12.5l2.5 2.5L16 9.5" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </sc-if>
+            </div>
+            <div>
+              <div style="font-size: 15px; font-weight: 700; color: #0F172A;">{{ c.nombre }}</div>
+              <div style="font-size: 12.5px; color: #64748B; margin-top: 2px;">{{ c.piso }} · {{ c.area }}</div>
+            </div>
+            <div style="font-size: 12px; color: #94A3B8; border-top: 1px solid #EEF2F6; padding-top: 10px;">{{ c.capacidad }}</div>
+          </button>
+        </sc-for>
+      </div>
+    </div>
+
+    <div style="display: flex; justify-content: space-between; gap: 12px;">
+      <button onClick="{{ goBack }}" style="background: #FFFFFF; color: #334155; border: 1px solid #CBD5E1; border-radius: 10px; padding: 13px 24px; font-size: 14px; font-weight: 700;">Atrás</button>
+      <button disabled="{{ step2Disabled }}" onClick="{{ goNext }}" style="background: {{ step2ButtonBg }}; color: #FFFFFF; border: none; border-radius: 10px; padding: 13px 28px; font-size: 14px; font-weight: 700;">Siguiente: Resumen</button>
+    </div>
+  </sc-if>
+
+  <!-- PASO 3 -->
+  <sc-if value="{{ isStep3 }}" hint-placeholder-val="{{ false }}">
+    <div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 20px; padding: 32px; display: flex; flex-direction: column; gap: 24px;">
+      <div>
+        <h2 style="margin: 0 0 4px; font-size: 18px; font-weight: 700; color: #0F172A;">Resumen de la atención</h2>
+        <p style="margin: 0; font-size: 13.5px; color: #64748B;">Verifica los datos antes de confirmar el alta.</p>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px 32px;">
+        <div>
+          <div style="font-size: 11.5px; font-weight: 700; letter-spacing: 0.03em; text-transform: uppercase; color: #94A3B8; margin-bottom: 4px;">Médico</div>
+          <div style="font-size: 15px; font-weight: 600; color: #0F172A;">{{ medicoNombre }}</div>
+        </div>
+        <div>
+          <div style="font-size: 11.5px; font-weight: 700; letter-spacing: 0.03em; text-transform: uppercase; color: #94A3B8; margin-bottom: 4px;">Paciente</div>
+          <div style="font-size: 15px; font-weight: 600; color: #0F172A;">{{ pacienteNombre }}</div>
+        </div>
+        <div>
+          <div style="font-size: 11.5px; font-weight: 700; letter-spacing: 0.03em; text-transform: uppercase; color: #94A3B8; margin-bottom: 4px;">Fecha de atención</div>
+          <div style="font-size: 15px; font-weight: 600; color: #0F172A;">{{ fechaDisplay }}</div>
+        </div>
+        <div>
+          <div style="font-size: 11.5px; font-weight: 700; letter-spacing: 0.03em; text-transform: uppercase; color: #94A3B8; margin-bottom: 4px;">Consultorio</div>
+          <div style="font-size: 15px; font-weight: 600; color: #0F172A;">{{ consultorioNombre }}</div>
+        </div>
+        <div style="grid-column: 1 / -1;">
+          <div style="font-size: 11.5px; font-weight: 700; letter-spacing: 0.03em; text-transform: uppercase; color: #94A3B8; margin-bottom: 4px;">Diagnóstico</div>
+          <div style="font-size: 14.5px; color: #1E293B; line-height: 1.5;">{{ diagnosticoDisplay }}</div>
+        </div>
+        <div style="grid-column: 1 / -1;">
+          <div style="font-size: 11.5px; font-weight: 700; letter-spacing: 0.03em; text-transform: uppercase; color: #94A3B8; margin-bottom: 4px;">Tratamiento</div>
+          <div style="font-size: 14.5px; color: #1E293B; line-height: 1.5;">{{ tratamientoDisplay }}</div>
+        </div>
+        <div style="grid-column: 1 / -1;">
+          <div style="font-size: 11.5px; font-weight: 700; letter-spacing: 0.03em; text-transform: uppercase; color: #94A3B8; margin-bottom: 8px;">Exámenes solicitados</div>
+          <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+            <sc-for list="{{ examenesSeleccionados }}" as="es" hint-placeholder-count="2">
+              <span style="font-size: 12.5px; font-weight: 600; color: #0F766E; background: #F0FDFA; border: 1px solid #CCFBF1; border-radius: 999px; padding: 5px 12px;">{{ es.nombre }}</span>
+            </sc-for>
+            <sc-if value="{{ sinExamenes }}" hint-placeholder-val="{{ false }}">
+              <span style="font-size: 13px; color: #94A3B8;">No se solicitaron exámenes.</span>
+            </sc-if>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display: flex; justify-content: space-between; gap: 12px;">
+      <button onClick="{{ goBack }}" style="background: #FFFFFF; color: #334155; border: 1px solid #CBD5E1; border-radius: 10px; padding: 13px 24px; font-size: 14px; font-weight: 700;">Atrás</button>
+      <button onClick="{{ confirm }}" style="background: #0D9488; color: #FFFFFF; border: none; border-radius: 10px; padding: 13px 28px; font-size: 14px; font-weight: 700;">Confirmar atención</button>
+    </div>
+  </sc-if>
+
+  </div>
+  </sc-if>
+
+</div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = {
+      currentStep: 1,
+      medicoId: '',
+      pacienteId: '',
+      fecha: '',
+      diagnostico: '',
+      tratamiento: '',
+      examenes: {},
+      consultorioId: '',
+      confirmed: false
+    };
+  }
+
+  goStep1 = () => { if (this.state.currentStep >= 1) this.setState({ currentStep: 1 }); };
+  goStep2 = () => { if (this.state.currentStep >= 2) this.setState({ currentStep: 2 }); };
+  goStep3 = () => { if (this.state.currentStep >= 3) this.setState({ currentStep: 3 }); };
+  goNext = () => { if (this.state.currentStep < 3) this.setState({ currentStep: this.state.currentStep + 1 }); };
+  goBack = () => { if (this.state.currentStep > 1) this.setState({ currentStep: this.state.currentStep - 1 }); };
+
+  onMedicoChange = (e) => this.setState({ medicoId: e.target.value });
+  onPacienteChange = (e) => this.setState({ pacienteId: e.target.value });
+  onFechaChange = (e) => this.setState({ fecha: e.target.value });
+  onDiagnosticoChange = (e) => this.setState({ diagnostico: e.target.value });
+  onTratamientoChange = (e) => this.setState({ tratamiento: e.target.value });
+
+  toggleExamen = (id) => {
+    const next = { ...this.state.examenes, [id]: !this.state.examenes[id] };
+    this.setState({ examenes: next });
+  };
+
+  selectConsultorio = (id) => this.setState({ consultorioId: id });
+
+  confirm = () => this.setState({ confirmed: true });
+
+  resetWizard = () => this.setState({
+    currentStep: 1, medicoId: '', pacienteId: '', fecha: '', diagnostico: '',
+    tratamiento: '', examenes: {}, consultorioId: '', confirmed: false
+  });
+
+  formatFecha(iso) {
+    if (!iso) return 'Sin fecha';
+    const parts = iso.split('-');
+    if (parts.length !== 3) return iso;
+    const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+    const d = parseInt(parts[2], 10);
+    const m = meses[parseInt(parts[1], 10) - 1] || '';
+    return d + ' de ' + m + ' de ' + parts[0];
+  }
+
+  renderVals() {
+    const s = this.state;
+
+    const medicosData = [
+      { id: 'm1', nombre: 'Dra. Fernanda Rojas', especialidad: 'Cardiología' },
+      { id: 'm2', nombre: 'Dr. Luis Herrera', especialidad: 'Medicina General' },
+      { id: 'm3', nombre: 'Dra. Camila Torres', especialidad: 'Pediatría' },
+      { id: 'm4', nombre: 'Dr. Jorge Paredes', especialidad: 'Dermatología' }
+    ];
+    const pacientesData = [
+      { id: 'p1', nombre: 'Ana Gómez Soto', doc: 'DNI 45102398' },
+      { id: 'p2', nombre: 'Carlos Medina Ruiz', doc: 'DNI 28871102' },
+      { id: 'p3', nombre: 'Lucía Fernández Paz', doc: 'DNI 71345690' },
+      { id: 'p4', nombre: 'Mateo Salinas Vega', doc: 'DNI 60239981' }
+    ];
+    const examenesData = [
+      { id: 'e1', nombre: 'Hemograma completo' },
+      { id: 'e2', nombre: 'Perfil lipídico' },
+      { id: 'e3', nombre: 'Glucosa en ayunas' },
+      { id: 'e4', nombre: 'Radiografía de tórax' },
+      { id: 'e5', nombre: 'Electrocardiograma' },
+      { id: 'e6', nombre: 'Ecografía abdominal' },
+      { id: 'e7', nombre: 'Examen de orina completo' },
+      { id: 'e8', nombre: 'Perfil hepático' }
+    ];
+    const consultoriosData = [
+      { id: 'c1', nombre: 'Consultorio 101', piso: 'Piso 1', area: 'Medicina General', capacidad: '1 camilla de examen' },
+      { id: 'c2', nombre: 'Consultorio 102', piso: 'Piso 1', area: 'Pediatría', capacidad: 'Báscula pediátrica' },
+      { id: 'c3', nombre: 'Consultorio 201', piso: 'Piso 2', area: 'Cardiología', capacidad: 'Electrocardiógrafo' },
+      { id: 'c4', nombre: 'Consultorio 202', piso: 'Piso 2', area: 'Dermatología', capacidad: 'Lámpara de examen' },
+      { id: 'c5', nombre: 'Consultorio 301', piso: 'Piso 3', area: 'Procedimientos', capacidad: 'Camilla + instrumental' },
+      { id: 'c6', nombre: 'Consultorio 302', piso: 'Piso 3', area: 'Ecografía', capacidad: 'Equipo de ultrasonido' }
+    ];
+
+    const medico = medicosData.find((m) => m.id === s.medicoId);
+    const paciente = pacientesData.find((p) => p.id === s.pacienteId);
+    const consultorio = consultoriosData.find((c) => c.id === s.consultorioId);
+
+    const canNext1 = !!(s.medicoId && s.pacienteId && s.fecha && s.diagnostico.trim().length > 0);
+    const canNext2 = !!s.consultorioId;
+
+    const teal = '#0D9488';
+    const tealSoft = '#CCFBF1';
+    const gray = '#E2E8F0';
+    const grayText = '#94A3B8';
+
+    const stepStyle = (n) => {
+      if (s.currentStep === n) {
+        return { circleBg: teal, circleColor: '#FFFFFF', circleBorder: teal, labelColor: teal, mark: String(n) };
+      }
+      if (s.currentStep > n) {
+        return { circleBg: tealSoft, circleColor: teal, circleBorder: tealSoft, labelColor: '#0F172A', mark: '✓' };
+      }
+      return { circleBg: '#FFFFFF', circleColor: grayText, circleBorder: gray, labelColor: grayText, mark: String(n) };
+    };
+
+    const examenes = examenesData.map((ex) => ({
+      id: ex.id,
+      nombre: ex.nombre,
+      inputId: 'exam-' + ex.id,
+      checked: !!s.examenes[ex.id],
+      toggle: () => this.toggleExamen(ex.id)
+    }));
+
+    const consultorios = consultoriosData.map((c) => {
+      const selected = s.consultorioId === c.id;
+      return {
+        id: c.id,
+        nombre: c.nombre,
+        piso: c.piso,
+        area: c.area,
+        capacidad: c.capacidad,
+        selected: selected,
+        borderColor: selected ? teal : '#E2E8F0',
+        bgColor: selected ? '#F0FDFA' : '#FFFFFF',
+        iconBg: selected ? teal : '#F1F5F9',
+        iconColor: selected ? '#FFFFFF' : '#64748B',
+        select: () => this.selectConsultorio(c.id)
+      };
+    });
+
+    return {
+      isStep1: s.currentStep === 1,
+      isStep2: s.currentStep === 2,
+      isStep3: s.currentStep === 3,
+      confirmed: s.confirmed,
+      notConfirmed: !s.confirmed,
+
+      step1: stepStyle(1),
+      step2: stepStyle(2),
+      step3: stepStyle(3),
+      line1Color: s.currentStep > 1 ? teal : gray,
+      line2Color: s.currentStep > 2 ? teal : gray,
+
+      goStep1: this.goStep1,
+      goStep2: this.goStep2,
+      goStep3: this.goStep3,
+      goNext: this.goNext,
+      goBack: this.goBack,
+      confirm: this.confirm,
+      resetWizard: this.resetWizard,
+
+      medicos: medicosData.map((m) => ({ id: m.id, label: m.nombre + ' — ' + m.especialidad })),
+      pacientes: pacientesData.map((p) => ({ id: p.id, label: p.nombre + ' — ' + p.doc })),
+      medicoId: s.medicoId,
+      pacienteId: s.pacienteId,
+      onMedicoChange: this.onMedicoChange,
+      onPacienteChange: this.onPacienteChange,
+
+      fecha: s.fecha,
+      onFechaChange: this.onFechaChange,
+      diagnostico: s.diagnostico,
+      onDiagnosticoChange: this.onDiagnosticoChange,
+      tratamiento: s.tratamiento,
+      onTratamientoChange: this.onTratamientoChange,
+
+      examenes: examenes,
+      consultorios: consultorios,
+
+      step1Disabled: !canNext1,
+      step1ButtonBg: canNext1 ? teal : '#CBD5E1',
+      step2Disabled: !canNext2,
+      step2ButtonBg: canNext2 ? teal : '#CBD5E1',
+
+      medicoNombre: medico ? medico.nombre + ' — ' + medico.especialidad : 'Sin seleccionar',
+      pacienteNombre: paciente ? paciente.nombre + ' (' + paciente.doc + ')' : 'Sin seleccionar',
+      consultorioNombre: consultorio ? consultorio.nombre + ' · ' + consultorio.piso + ' · ' + consultorio.area : 'Sin seleccionar',
+      fechaDisplay: this.formatFecha(s.fecha),
+      diagnosticoDisplay: s.diagnostico.trim() ? s.diagnostico : 'Sin registrar',
+      tratamientoDisplay: s.tratamiento.trim() ? s.tratamiento : 'Sin registrar',
+      examenesSeleccionados: examenesData.filter((ex) => !!s.examenes[ex.id]),
+      sinExamenes: examenesData.filter((ex) => !!s.examenes[ex.id]).length === 0
+    };
+  }
+}
+</script>
+</body>
+</html>

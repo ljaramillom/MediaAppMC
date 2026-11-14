@@ -1,0 +1,99 @@
+<form [formRoot]="medicForm.$form" (submit)="operate()">
+
+  <h2 mat-dialog-title>{{ $isEdit() ? 'Edit medic' : 'New medic' }}</h2>
+
+  <mat-dialog-content class="example-container">
+
+    <mat-form-field >
+        <mat-label>ID</mat-label>
+        <input matInput placeholder="Id" [formField]="medicForm.$form.idMedic" >
+    </mat-form-field>
+
+    <mat-form-field>
+        <mat-label>SPECIALTY</mat-label>
+        <mat-select [formField]="medicForm.$form.idSpecialty">
+            @for (specialty of $specialties(); track specialty.idSpecialty) {
+                <mat-option [value]="specialty.idSpecialty">{{ specialty.nameSpecialty }}</mat-option>
+            }
+        </mat-select>
+        @if (medicForm.$form.idSpecialty().errors().some(error => error.kind === 'required') && medicForm.$form.idSpecialty().touched()) {
+            <small class="invalid">Is required</small>
+        }
+    </mat-form-field>
+
+    <mat-form-field>
+        <mat-label>FIRST NAME</mat-label>
+        <input matInput placeholder="First name" [formField]="medicForm.$form.primaryName">
+        @if (medicForm.$form.primaryName().errors().some(error => error.kind === 'required') && medicForm.$form.primaryName().touched()) {
+            <small class="invalid">Is required</small>
+        }
+
+        @if (medicForm.$form.primaryName().errors().some(error => error.kind === 'maxLength') && medicForm.$form.primaryName().touched()) {
+            <small class="invalid">MaxLength is 70</small>
+        }
+    </mat-form-field>
+
+    <mat-form-field>
+        <mat-label>LAST NAME</mat-label>
+        <input matInput placeholder="Last name" [formField]="medicForm.$form.surname">
+        @if (medicForm.$form.surname().errors().some(error => error.kind === 'required') && medicForm.$form.surname().touched()) {
+            <small class="invalid">Is required</small>
+        }
+
+        @if (medicForm.$form.surname().errors().some(error => error.kind === 'maxLength') && medicForm.$form.surname().touched()) {
+            <small class="invalid">MaxLength is 70</small>
+        }
+    </mat-form-field>
+
+    <mat-form-field>
+        <mat-label>CMP</mat-label>
+        <input matInput placeholder="CMP" [formField]="medicForm.$form.cmpMedic">
+        @if (medicForm.$form.cmpMedic().errors().some(error => error.kind === 'required') && medicForm.$form.cmpMedic().touched()) {
+            <small class="invalid">Is required</small>
+        }
+
+        @if (medicForm.$form.cmpMedic().errors().some(error => error.kind === 'maxLength') && medicForm.$form.cmpMedic().touched()) {
+            <small class="invalid">MaxLength is 12</small>
+        }
+    </mat-form-field>
+
+    <!-- La foto se sube como archivo; la URL actual viaja en el modelo (photo) y el backend la conserva si no se elige archivo -->
+    <div class="photo-container">
+        @if (medicForm.$model().photo) {
+            <img class="photo-preview" [src]="medicForm.$model().photo" width="80" height="80" alt="Current medic photo">
+        }
+
+        <input #fileInput id="medic-photo" type="file" accept="image/*" hidden (change)="onFileSelected($event)">
+        <button mat-stroked-button type="button" (click)="fileInput.click()" aria-describedby="medic-photo-hint">
+            <mat-icon>photo_camera</mat-icon>
+            <span>{{ medicForm.$model().photo ? 'CHANGE PHOTO' : 'SELECT PHOTO' }}</span>
+        </button>
+
+        <small id="medic-photo-hint">
+            @if ($file(); as file) {
+                {{ file.name }}
+            } @else {
+                Image only, max 2MB
+            }
+        </small>
+
+        @if ($fileError(); as fileError) {
+            <small class="invalid" role="alert">{{ fileError }}</small>
+        }
+    </div>
+
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-flat-button type="button" class="cancel-button" [mat-dialog-close]="false">
+        <span>cancel</span>
+        <mat-icon>cancel</mat-icon>
+    </button>
+
+    <button mat-flat-button type="submit" [disabled]="medicForm.isInvalid() || !!$fileError()">
+        <span>OK</span>
+        <mat-icon>done</mat-icon>
+    </button>
+  </mat-dialog-actions>
+
+</form>

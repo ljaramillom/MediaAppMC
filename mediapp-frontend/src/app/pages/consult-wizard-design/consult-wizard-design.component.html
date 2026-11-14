@@ -1,0 +1,245 @@
+<div class="page">
+
+    <header class="page-header">
+        <h1>Nueva atención médica</h1>
+        <p>Registra los datos clínicos, elige el consultorio y confirma el alta.</p>
+    </header>
+
+    @if ($saved(); as saved) {
+
+        <!-- Panel de exito: reemplaza al stepper tras el 201 -->
+        <section class="card success" aria-live="polite">
+            <span class="success-icon" aria-hidden="true">
+                <svg width="30" height="30" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </span>
+            <h2>Atención registrada</h2>
+            <p>La atención de <strong>{{ saved.patient }}</strong> con <strong>{{ saved.medic }}</strong> quedó agendada en <strong>{{ saved.consultorio }}</strong> el {{ saved.date }}.</p>
+            <button mat-flat-button type="button" class="btn-primary" (click)="registerAnother()">Registrar otra atención</button>
+        </section>
+
+    } @else {
+
+        <div class="stepper-wrap" [class.horizontal]="$orientation() === 'horizontal'">
+        <mat-stepper linear #stepper [orientation]="$orientation()" aria-label="Pasos del alta de atención">
+
+            <!-- Circulo del paso: numero (activo o pendiente) o check (completado) -->
+            <ng-template matStepperIcon="number" let-index="index" let-active="active">
+                <span class="step-circle" [class.active]="active">{{ index + 1 }}</span>
+            </ng-template>
+            <ng-template matStepperIcon="edit">
+                <span class="step-circle done"><mat-icon aria-hidden="true">check</mat-icon></span>
+            </ng-template>
+            <ng-template matStepperIcon="done">
+                <span class="step-circle done"><mat-icon aria-hidden="true">check</mat-icon></span>
+            </ng-template>
+
+            <!-- PASO 1: datos de la atencion -->
+            <mat-step [completed]="wizardForm.isStep1Valid()">
+                <ng-template matStepLabel>
+                    <span class="step-label" [class.current]="stepper.selectedIndex === 0" [class.past]="stepper.selectedIndex > 0">
+                        <span class="step-kicker">Paso 1</span>
+                        <span class="step-title">Datos de la atención</span>
+                    </span>
+                </ng-template>
+
+                <section class="card">
+                    <div class="card-head">
+                        <h2>Datos de la atención</h2>
+                        <p>Médico, paciente, diagnóstico y exámenes solicitados.</p>
+                    </div>
+
+                    <div class="grid-2">
+                        <div class="field">
+                            <span class="field-label" id="wd-medic-label">Médico</span>
+                            <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                                <mat-select [formField]="wizardForm.$form.idMedic" placeholder="Seleccionar médico…" aria-labelledby="wd-medic-label">
+                                    @for (medic of $medics(); track medic.idMedic) {
+                                        <mat-option [value]="medic.idMedic">{{ medicLabel(medic) }}</mat-option>
+                                    }
+                                </mat-select>
+                                <mat-error>Selecciona un médico.</mat-error>
+                            </mat-form-field>
+                        </div>
+
+                        <div class="field">
+                            <span class="field-label" id="wd-patient-label">Paciente</span>
+                            <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                                <mat-select [formField]="wizardForm.$form.idPatient" placeholder="Seleccionar paciente…" aria-labelledby="wd-patient-label">
+                                    @for (patient of $patients(); track patient.idPatient) {
+                                        <mat-option [value]="patient.idPatient">{{ patientLabel(patient) }}</mat-option>
+                                    }
+                                </mat-select>
+                                <mat-error>Selecciona un paciente.</mat-error>
+                            </mat-form-field>
+                        </div>
+                    </div>
+
+                    <div class="field date-field">
+                        <label class="field-label" for="wd-date">Fecha de atención</label>
+                        <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                            <input matInput id="wd-date" placeholder="MM/DD/AAAA" [matDatepicker]="picker" [min]="minDate" [formField]="wizardForm.$form.consultDate">
+                            <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                            <mat-datepicker #picker></mat-datepicker>
+                            <mat-error>Ingresa una fecha válida (desde hoy).</mat-error>
+                        </mat-form-field>
+                    </div>
+
+                    <div class="grid-2">
+                        <div class="field">
+                            <label class="field-label" for="wd-diagnosis">Diagnóstico</label>
+                            <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                                <textarea matInput id="wd-diagnosis" rows="4" placeholder="Ej. Hipertensión arterial leve" [formField]="wizardForm.$form.diagnosis"></textarea>
+                                <mat-hint align="end">{{ wizardForm.$model().diagnosis.length }} / {{ maxDiagnosisLength }}</mat-hint>
+                                @if (wizardForm.$form.diagnosis().errors().some(error => error.kind === 'maxLength')) {
+                                    <mat-error>Máximo {{ maxDiagnosisLength }} caracteres.</mat-error>
+                                } @else {
+                                    <mat-error>El diagnóstico es obligatorio.</mat-error>
+                                }
+                            </mat-form-field>
+                        </div>
+
+                        <div class="field">
+                            <label class="field-label" for="wd-treatment">Tratamiento</label>
+                            <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                                <textarea matInput id="wd-treatment" rows="4" placeholder="Ej. Losartán 50mg cada 24h por 30 días" [formField]="wizardForm.$form.treatment"></textarea>
+                                <mat-hint align="end">{{ wizardForm.$model().treatment.length }} / {{ maxTreatmentLength }}</mat-hint>
+                                @if (wizardForm.$form.treatment().errors().some(error => error.kind === 'maxLength')) {
+                                    <mat-error>Máximo {{ maxTreatmentLength }} caracteres.</mat-error>
+                                } @else {
+                                    <mat-error>El tratamiento es obligatorio.</mat-error>
+                                }
+                            </mat-form-field>
+                        </div>
+                    </div>
+
+                    <fieldset class="exams">
+                        <legend class="field-label">Exámenes solicitados</legend>
+                        <div class="grid-2 exam-grid">
+                            @for (exam of $exams(); track exam.idExam) {
+                                <mat-checkbox [checked]="wizardForm.isExamSelected(exam.idExam)" (change)="wizardForm.toggleExam(exam.idExam, $event.checked)">{{ exam.nameExam }}</mat-checkbox>
+                            } @empty {
+                                <span class="muted">No hay exámenes registrados.</span>
+                            }
+                        </div>
+                    </fieldset>
+                </section>
+
+                <div class="actions end">
+                    <button mat-flat-button type="button" class="btn-primary" matStepperNext [disabled]="!wizardForm.isStep1Valid()">Siguiente: Consultorio</button>
+                </div>
+            </mat-step>
+
+            <!-- PASO 2: consultorio -->
+            <mat-step [completed]="wizardForm.isStep2Valid()">
+                <ng-template matStepLabel>
+                    <span class="step-label" [class.current]="stepper.selectedIndex === 1" [class.past]="stepper.selectedIndex > 1">
+                        <span class="step-kicker">Paso 2</span>
+                        <span class="step-title">Consultorio</span>
+                    </span>
+                </ng-template>
+
+                <section class="card">
+                    <div class="card-head">
+                        <h2 id="wd-room-title">Selecciona el consultorio</h2>
+                        <p>Elige visualmente dónde se realizará la atención.</p>
+                    </div>
+
+                    <div class="grid-3" role="group" aria-labelledby="wd-room-title">
+                        @for (room of consultorios; track room.code) {
+                            @let selected = wizardForm.$model().numConsult === room.code;
+                            <button type="button" class="room" [class.selected]="selected" [attr.aria-pressed]="selected" (click)="selectConsultorio(room)">
+                                <span class="room-top">
+                                    <span class="room-icon" aria-hidden="true">
+                                        <svg width="19" height="19" viewBox="0 0 24 24" fill="none"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                    </span>
+                                    @if (selected) {
+                                        <svg class="room-check" width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="currentColor"/><path d="M8 12.5l2.5 2.5L16 9.5" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                    }
+                                </span>
+                                <span class="room-name">{{ room.name }}</span>
+                                <span class="room-area">{{ room.floor }} · {{ room.area }}</span>
+                                <span class="room-equipment">{{ room.equipment }}</span>
+                            </button>
+                        }
+                    </div>
+                </section>
+
+                <div class="actions">
+                    <button mat-stroked-button type="button" class="btn-back" matStepperPrevious>Atrás</button>
+                    <button mat-flat-button type="button" class="btn-primary" matStepperNext [disabled]="!wizardForm.isStep2Valid()">Siguiente: Resumen</button>
+                </div>
+            </mat-step>
+
+            <!-- PASO 3: resumen y confirmacion -->
+            <mat-step>
+                <ng-template matStepLabel>
+                    <span class="step-label" [class.current]="stepper.selectedIndex === 2" [class.past]="stepper.selectedIndex > 2">
+                        <span class="step-kicker">Paso 3</span>
+                        <span class="step-title">Resumen y confirmación</span>
+                    </span>
+                </ng-template>
+
+                <section class="card">
+                    <div class="card-head">
+                        <h2>Resumen de la atención</h2>
+                        <p>Verifica los datos antes de confirmar el alta.</p>
+                    </div>
+
+                    <dl class="grid-2 summary">
+                        <div>
+                            <dt>Médico</dt>
+                            <dd class="strong">{{ medicLabel($selectedMedic()) }}</dd>
+                        </div>
+                        <div>
+                            <dt>Paciente</dt>
+                            <dd class="strong">
+                                @if ($selectedPatient(); as patient) {
+                                    {{ patient.firstName }} {{ patient.lastName }} (DNI {{ patient.dni }})
+                                } @else {
+                                    Sin seleccionar
+                                }
+                            </dd>
+                        </div>
+                        <div>
+                            <dt>Fecha de atención</dt>
+                            <dd class="strong">{{ $dateLabel() }}</dd>
+                        </div>
+                        <div>
+                            <dt>Consultorio</dt>
+                            <dd class="strong">{{ consultorioLabel($selectedConsultorio()) }}</dd>
+                        </div>
+                        <div class="full">
+                            <dt>Diagnóstico</dt>
+                            <dd>{{ wizardForm.$model().diagnosis.trim() || 'Sin registrar' }}</dd>
+                        </div>
+                        <div class="full">
+                            <dt>Tratamiento</dt>
+                            <dd>{{ wizardForm.$model().treatment.trim() || 'Sin registrar' }}</dd>
+                        </div>
+                        <div class="full">
+                            <dt>Exámenes solicitados</dt>
+                            <dd>
+                                @if ($selectedExams().length > 0) {
+                                    <mat-chip-set aria-label="Exámenes solicitados">
+                                        @for (exam of $selectedExams(); track exam.idExam) {
+                                            <mat-chip disableRipple>{{ exam.nameExam }}</mat-chip>
+                                        }
+                                    </mat-chip-set>
+                                } @else {
+                                    <span class="muted">No se solicitaron exámenes.</span>
+                                }
+                            </dd>
+                        </div>
+                    </dl>
+                </section>
+
+                <div class="actions">
+                    <button mat-stroked-button type="button" class="btn-back" matStepperPrevious [disabled]="$saving()">Atrás</button>
+                    <button mat-flat-button type="button" class="btn-primary" (click)="save()" [disabled]="!$canSave()">Confirmar atención</button>
+                </div>
+            </mat-step>
+
+        </mat-stepper>
+        </div>
+    }
+</div>

@@ -1,0 +1,25 @@
+.example-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.example-container>* {
+    width: 100%;
+}
+
+.invalid {
+    color: red;
+}
+
+.photo-container {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.photo-preview {
+    border-radius: 50%;
+    object-fit: cover;
+}

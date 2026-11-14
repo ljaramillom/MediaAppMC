@@ -1,0 +1,42 @@
+<form [formRoot]="examForm.$form" class="example-container" (submit)="operate()">
+    
+    <mat-form-field >
+        <mat-label>ID</mat-label>
+        <input matInput placeholder="Id" [formField]="examForm.$form.idExam" >
+    </mat-form-field>    
+
+    <mat-form-field>
+        <mat-label>NAME</mat-label>
+        <input matInput placeholder="Name" [formField]="examForm.$form.nameExam">
+        @if (examForm.$form.nameExam().errors().some(error => error.kind === 'required') && examForm.$form.nameExam().touched()) {
+            <small class="invalid">Is required</small>
+        }
+
+        @if (examForm.$form.nameExam().errors().some(error => error.kind === 'minLength') && examForm.$form.nameExam().touched()) {
+            <small class="invalid">MinLength is 3</small>
+        }
+    </mat-form-field>
+
+    <mat-form-field>
+        <mat-label>DESCRIPTION</mat-label>
+        <input matInput placeholder="Description" [formField]="examForm.$form.descriptionExam">
+        @if (examForm.$form.descriptionExam().errors().some(error => error.kind === 'required') && examForm.$form.descriptionExam().touched()) {
+            <small class="invalid">Is required</small>
+        }
+
+        @if (examForm.$form.descriptionExam().errors().some(error => error.kind === 'minLength') && examForm.$form.descriptionExam().touched()) {
+            <small class="invalid">MinLength is 15</small>
+        }
+    </mat-form-field>
+
+    <button mat-flat-button type="submit" [disabled]="examForm.isInvalid()">
+        <span>OK</span>
+        <mat-icon>done</mat-icon>
+    </button>    
+
+    <button mat-flat-button type="button" class="cancel-button" routerLink="/pages/exam">
+        <span>cancel</span>
+        <mat-icon>cancel</mat-icon>
+    </button>    
+
+</form>

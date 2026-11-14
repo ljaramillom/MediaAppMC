@@ -1,0 +1,45 @@
+<h2 mat-dialog-title>Consult {{ consult.numConsult }}</h2>
+
+<mat-dialog-content>
+    <p>
+        <strong>Patient:</strong> {{ consult.patient?.firstName }} {{ consult.patient?.lastName }}<br>
+        <strong>Medic:</strong> {{ consult.medic?.primaryName }} {{ consult.medic?.surname }}<br>
+        <strong>Date:</strong> {{ consult.consultDate | date:'dd/MM/yyyy HH:mm' }}
+    </p>
+
+    <h3>Details</h3>
+    <mat-list>
+        @for (detail of consult.details; track $index) {
+            <mat-list-item>
+                <mat-icon matListItemIcon aria-hidden="true">medical_information</mat-icon>
+                <span matListItemTitle>{{ detail.diagnosis }}</span>
+                <span matListItemLine>{{ detail.treatment }}</span>
+            </mat-list-item>
+        } @empty {
+            <mat-list-item>No details</mat-list-item>
+        }
+    </mat-list>
+
+    <mat-divider></mat-divider>
+
+    <h3>Exams</h3>
+    @if ($loadingExams()) {
+        <p>Loading exams...</p>
+    } @else {
+        <mat-list>
+            @for (exam of $exams(); track exam.idExam) {
+                <mat-list-item>
+                    <mat-icon matListItemIcon aria-hidden="true">assignment</mat-icon>
+                    <span matListItemTitle>{{ exam.nameExam }}</span>
+                    <span matListItemLine>{{ exam.descriptionExam }}</span>
+                </mat-list-item>
+            } @empty {
+                <mat-list-item>No exams</mat-list-item>
+            }
+        </mat-list>
+    }
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close cdkFocusInitial>Close</button>
+</mat-dialog-actions>
