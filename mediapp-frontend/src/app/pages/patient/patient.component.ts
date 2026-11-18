@@ -6,7 +6,7 @@ import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
-import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterLink, RouterOutlet } from '@angular/router';
@@ -43,10 +43,13 @@ export class PatientComponent {
 
   protected readonly dataSource = new MatTableDataSource<Patient>();
   protected displayedColumns: string[] = ['idPatient', 'firstName', 'lastName', 'dni', 'phone', 'email', 'actions'];
-  protected readonly $paginator = viewChild(MatPaginator);
+  //protected readonly $paginator = viewChild(MatPaginator);
   protected readonly $sort = viewChild(MatSort);
   private readonly snackBar = inject(MatSnackBar);
   private readonly dialog = inject(MatDialog);
+
+  protected $pageRequest = this.patientStore.$pageRequest;
+  protected $totalElements = this.patientStore.$totalElements;
 
   constructor() {
     this.setupTableEffect();
@@ -56,38 +59,42 @@ export class PatientComponent {
   private setupTableEffect() {
     effect(() => {
       const data = this.$patients();
-      const p = this.$paginator();
+      //const p = this.$paginator();
       const s = this.$sort();
 
       this.dataSource.data = data;
-      this.dataSource.paginator = p;
+      //this.dataSource.paginator = p;
       this.dataSource.sort = s;
     });
   }
 
-  private setupNotificationEffect(){
+  private setupNotificationEffect() {
     effect(() => {
       const message = this.notificationService.$message();
-      if(message){
+      if (message) {
         this.snackBar.open(message, 'INFO', { duration: 3000, horizontalPosition: 'left', verticalPosition: 'top' });
         this.notificationService.clear();
       }
     });
   }
 
-  delete(idPatient: number){
+  delete(idPatient: number) {
     this.dialog.open(ConfirmDialogComponent).afterClosed().pipe(
       filter(confirmed => confirmed === true),
       switchMap(() => this.patientService.delete(idPatient)),
-      tap(()=> {
+      tap(() => {
         this.patientStore.reload();
         this.notificationService.notify('DELETED');
       })
     ).subscribe();
   }
 
-  applyFilter(e: any){
+  applyFilter(e: any) {
     const filterValue = e.target.value;
     this.dataSource.filter = filterValue.trim().toLowerCase();
+  }
+
+  changePage(e: PageEvent) {
+    this.patientStore.change(e.pageIndex, e.pageSize);
   }
 }

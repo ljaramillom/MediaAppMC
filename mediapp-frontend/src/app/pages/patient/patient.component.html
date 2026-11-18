@@ -63,7 +63,11 @@
     </tr>
   </table>
 
-  <mat-paginator [pageSizeOptions]="[3, 10, 25, 100]" aria-label="Select page of patients"></mat-paginator>
+  <mat-paginator [pageSizeOptions]="[3, 10, 25, 100]" aria-label="Select page of patients"
+    [length]="$totalElements()"
+    [pageSize]="$pageRequest().size"
+    (page)="changePage($event)">
+    </mat-paginator>
 
   <button mat-fab style="float: right;" routerLink="/pages/patient/new" aria-label="New patient">
     <mat-icon>add</mat-icon>
